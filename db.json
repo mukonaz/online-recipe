@@ -1,5 +1,22 @@
 {
-  "recipes": [],
+  "recipes": [
+    {
+      "id": "ba6a",
+      "name": "pap",
+      "ingredients": [
+        "1 litre (4 cups) water",
+        "salt to taste",
+        "240g (2 cups) ACE SUPER MAIZE MEAL"
+      ],
+      "instructions": "1.Bring water to a boil, add salt.\n2.Gradually stir in ACE SUPER MAIZE MEAL.\n3.Cook over low heat, stirring constantly with a wooden 4.spoon for about 20 minutes until cooked through.\n5.Mix in butter to taste (optional).\n6.Stir well until stiff and cooked through.",
+      "category": "dinner",
+      "preparationTime": "30",
+      "cookingTime": "25",
+      "servings": "4",
+      "picture": "",
+      "userId": "02a3"
+    }
+  ],
   "users": [
     {
       "id": "136e",
@@ -9,6 +26,18 @@
     },
     {
       "id": "a67d",
+      "name": "",
+      "email": "",
+      "password": ""
+    },
+    {
+      "id": "02a3",
+      "name": "",
+      "email": "",
+      "password": ""
+    },
+    {
+      "id": "a2e0",
       "name": "",
       "email": "",
       "password": ""

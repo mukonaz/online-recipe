@@ -1,69 +1,60 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-function SignInForm() {
-  const [state, setState] = React.useState({
+function SignUpForm({ setUser }) {
+  const [state, setState] = useState({
+    name: "",
     email: "",
     password: ""
   });
+  const navigate = useNavigate();
 
   const handleChange = (evt) => {
     const { name, value } = evt.target;
-    setState((prevState) => ({
-      ...prevState,
+    setState({
+      ...state,
       [name]: value
-    }));
+    });
   };
 
   const handleOnSubmit = async (evt) => {
     evt.preventDefault();
 
-    const { email, password } = state;
+    const { name, email, password } = state;
 
     try {
-      const response = await fetch("http://localhost:3001/users");
-      if (!response.ok) {
-        throw new Error("Failed to fetch users");
-      }
+      const response = await fetch("http://localhost:3001/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ name, email, password })
+      });
 
-      const users = await response.json();
-      const user = users.find((user) => user.email === email && user.password === password);
-
-      if (user) {
-        alert(`Welcome back, ${user.name}!`);
+      if (response.ok) {
+        const newUser = await response.json();
+        setUser(newUser); // Set the logged-in user
+        navigate("/home"); // Redirect to homepage
       } else {
-        alert("Invalid email or password");
+        alert("Failed to sign up");
       }
-
-      setState({ email: "", password: "" });
     } catch (error) {
       console.error("Error:", error);
-      alert("Error signing in");
+      alert("Error signing up");
     }
   };
 
   return (
-    <div className="form-container sign-in-container">
+    <div className="form-container sign-up-container">
       <form onSubmit={handleOnSubmit}>
-        <h1>Sign in</h1>
-        <div className="social-container">
-          <a href="#" className="social">
-            <i className="fab fa-facebook-f" />
-          </a>
-          <a href="#" className="social">
-            <i className="fab fa-google-plus-g" />
-          </a>
-          <a href="#" className="social">
-            <i className="fab fa-linkedin-in" />
-          </a>
-        </div>
-        <span>or use your account</span>
-        <input type="email" placeholder="Email" name="email" value={state.email} onChange={handleChange} />
-        <input type="password" name="password" placeholder="Password" value={state.password} onChange={handleChange} />
-        <a href="#">Forgot your password?</a>
-        <button type="submit">Sign In</button>
+        <h1>Create Account</h1>
+        <input type="text" name="name" value={state.name} onChange={handleChange} placeholder="Name" />
+        <input type="email" name="email" value={state.email} onChange={handleChange} placeholder="Email" />
+        <input type="password" name="password" value={state.password} onChange={handleChange} placeholder="Password" />
+        <button type="submit">Sign Up</button>
       </form>
     </div>
   );
 }
 
-export default SignInForm;
+export default SignUpForm;

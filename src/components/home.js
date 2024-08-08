@@ -30,8 +30,8 @@ function HomePage({ user }) {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     const method = isEditing ? "PUT" : "POST";
     const url = isEditing
       ? `http://localhost:3001/recipes/${editId}`
@@ -40,18 +40,20 @@ function HomePage({ user }) {
     const recipeData = {
       ...newRecipe,
       userId: user.id,
-      ingredients: newRecipe.ingredients.split(","),
+      ingredients: newRecipe.ingredients.split(",").map(item => item.trim()), // Ensure ingredients is an array
     };
 
-    fetch(url, {
-      method,
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(recipeData)
-    })
-      .then(response => response.json())
-      .then(data => {
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(recipeData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
         if (isEditing) {
           setRecipes(recipes.map((recipe) => (recipe.id === editId ? data : recipe)));
           setIsEditing(false);
@@ -69,11 +71,25 @@ function HomePage({ user }) {
           servings: "",
           picture: ""
         });
-      });
+      } else {
+        console.error('Failed to add/update recipe');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   const handleEdit = (recipe) => {
-    setNewRecipe(recipe);
+    setNewRecipe({
+      name: recipe.name,
+      ingredients: recipe.ingredients.join(", "), // Convert array to comma-separated string
+      instructions: recipe.instructions,
+      category: recipe.category,
+      preparationTime: recipe.preparationTime,
+      cookingTime: recipe.cookingTime,
+      servings: recipe.servings,
+      picture: recipe.picture
+    });
     setIsEditing(true);
     setEditId(recipe.id);
   };
@@ -91,14 +107,64 @@ function HomePage({ user }) {
       <h1>Welcome, {user.name}</h1>
       <form onSubmit={handleSubmit} className="recipe-form">
         <h2>{isEditing ? "Edit Recipe" : "Add New Recipe"}</h2>
-        <input type="text" name="name" placeholder="Recipe Name" value={newRecipe.name} onChange={handleChange} required />
-        <input type="text" name="ingredients" placeholder="Ingredients (comma separated)" value={newRecipe.ingredients} onChange={handleChange} required/>
-        <textarea name="instructions" placeholder="Instructions" value={newRecipe.instructions} onChange={handleChange} required/>
-        <input type="text" name="category" placeholder="Category (e.g., Dessert)" value={newRecipe.category} onChange={handleChange}/>
-        <input type="text" name="preparationTime" placeholder="Preparation Time" value={newRecipe.preparationTime} onChange={handleChange} />
-        <input type="text" name="cookingTime" placeholder="Cooking Time" value={newRecipe.cookingTime} onChange={handleChange}/>
-        <input type="text" name="servings" placeholder="Servings" value={newRecipe.servings} onChange={handleChange}/>
-        <input type="text" name="picture" placeholder="Picture URL" value={newRecipe.picture} onChange={handleChange}/>
+        <input
+          type="text"
+          name="name"
+          placeholder="Recipe Name"
+          value={newRecipe.name}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="text"
+          name="ingredients"
+          placeholder="Ingredients (comma separated)"
+          value={newRecipe.ingredients}
+          onChange={handleChange}
+          required
+        />
+        <textarea
+          name="instructions"
+          placeholder="Instructions"
+          value={newRecipe.instructions}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="text"
+          name="category"
+          placeholder="Category (e.g., Dessert)"
+          value={newRecipe.category}
+          onChange={handleChange}
+        />
+        <input
+          type="text"
+          name="preparationTime"
+          placeholder="Preparation Time"
+          value={newRecipe.preparationTime}
+          onChange={handleChange}
+        />
+        <input
+          type="text"
+          name="cookingTime"
+          placeholder="Cooking Time"
+          value={newRecipe.cookingTime}
+          onChange={handleChange}
+        />
+        <input
+          type="text"
+          name="servings"
+          placeholder="Servings"
+          value={newRecipe.servings}
+          onChange={handleChange}
+        />
+        <input
+          type="text"
+          name="picture"
+          placeholder="Picture URL"
+          value={newRecipe.picture}
+          onChange={handleChange}
+        />
         <button type="submit">{isEditing ? "Update Recipe" : "Add Recipe"}</button>
       </form>
 
