@@ -1,4 +1,17 @@
 {
-    "recipes": []
-  }
-  
+  "recipes": [],
+  "users": [
+    {
+      "id": "136e",
+      "name": "kevinfun1",
+      "email": "mukona@gmail.com",
+      "password": "mukona101"
+    },
+    {
+      "id": "a67d",
+      "name": "",
+      "email": "",
+      "password": ""
+    }
+  ]
+}
