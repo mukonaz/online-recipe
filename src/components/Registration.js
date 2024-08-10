@@ -1,58 +1,64 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-function Registration() {
-  const [state, setState] = useState({
-    name: "",
-    email: "",
-    password: ""
-  });
+function SignUpForm({ onLogin }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleChange = (evt) => {
-    const { name, value } = evt.target;
-    setState((prevState) => ({
-      ...prevState,
-      [name]: value
-    }));
-  };
-
-  const handleOnSubmit = async (evt) => {
-    evt.preventDefault();
-
-    const { name, email, password } = state;
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:3001/users", {
+      const response = await fetch("http://localhost:3001/users?email=" + encodeURIComponent(email));
+      const users = await response.json();
+
+      if (users.length > 0) {
+        setError("User already exists with this email.");
+        return;
+      }
+
+      const newUser = { email, password };
+      const createUserResponse = await fetch("http://localhost:3001/users", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ name, email, password })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newUser),
       });
 
-      if (response.ok) {
-        const newUser = await response.json();
-        alert(`User signed up with ID: ${newUser.id}`);
-        setState({ name: "", email: "", password: "" });
+      if (createUserResponse.ok) {
+        const user = await createUserResponse.json();
+        onLogin(user); // Pass user data to App component
       } else {
-        alert("Failed to sign up");
+        setError("Failed to create user. Please try again.");
       }
     } catch (error) {
-      console.error("Error:", error);
-      alert("Error signing up");
+      console.error("Error during sign up:", error);
+      setError("An error occurred. Please try again.");
     }
   };
 
   return (
-    <div className="form-container sign-up-container">
-      <form onSubmit={handleOnSubmit}>
-        <h1>Create Account</h1>
-        <input type="text" name="name" value={state.name} onChange={handleChange} placeholder="Name" />
-        <input type="email" name="email" value={state.email} onChange={handleChange} placeholder="Email" />
-        <input type="password" name="password" value={state.password} onChange={handleChange} placeholder="Password" />
+    <div className="form-container">
+      <form onSubmit={handleSubmit}>
+        <h1>Sign Up</h1>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
         <button type="submit">Sign Up</button>
+        {error && <p className="error">{error}</p>}
       </form>
     </div>
   );
 }
 
-export default Registration;
+export default SignUpForm;

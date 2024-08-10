@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-function HomePage({ user }) {
+function HomePage({ user, onLogout }) {
   const [recipes, setRecipes] = useState([]);
   const [newRecipe, setNewRecipe] = useState({
     name: "",
@@ -14,13 +15,22 @@ function HomePage({ user }) {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
+  const navigate = useNavigate(); // Hook to programmatically navigate
 
   useEffect(() => {
-    // Fetch the user's recipes from the JSON server
-    fetch(`http://localhost:3001/recipes?userId=${user.id}`)
-      .then(response => response.json())
-      .then(data => setRecipes(data));
-  }, [user.id]);
+    if (user && user.id) {
+      // Fetch the user's recipes from the JSON server
+      fetch(`http://localhost:3001/recipes?userId=${user.id}`)
+        .then(response => response.json())
+        .then(data => {
+          console.log('Fetched recipes:', data); // Log the fetched data
+          setRecipes(data);
+        })
+        .catch(error => {
+          console.error("Failed to fetch recipes:", error); // Log any errors
+        });
+    }
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,6 +42,10 @@ function HomePage({ user }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (!user || !user.id) {
+      alert("User is not logged in");
+      return;
+    }
     const method = isEditing ? "PUT" : "POST";
     const url = isEditing
       ? `http://localhost:3001/recipes/${editId}`
@@ -71,6 +85,7 @@ function HomePage({ user }) {
           servings: "",
           picture: ""
         });
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to the top
       } else {
         console.error('Failed to add/update recipe');
       }
@@ -102,8 +117,18 @@ function HomePage({ user }) {
     });
   };
 
+  const handleLogout = () => {
+    onLogout(); // Call the onLogout function passed via props
+    navigate('/'); // Redirect to login page
+  };
+
+  if (!user || !user.id) {
+    return <div>Loading user data...</div>;
+  }
+
   return (
     <div className="home-page">
+      <button onClick={handleLogout}>Logout</button>
       <h1>Welcome, {user.name}</h1>
       <form onSubmit={handleSubmit} className="recipe-form">
         <h2>{isEditing ? "Edit Recipe" : "Add New Recipe"}</h2>

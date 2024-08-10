@@ -15,6 +15,24 @@
       "servings": "4",
       "picture": "",
       "userId": "02a3"
+    },
+    {
+      "name": "ice cream",
+      "ingredients": [
+        "2cups heavy cream",
+        "1cup whole milk",
+        "⅔cup granulated sugar",
+        "⅛teaspoon fine sea salt",
+        "6large egg yolks"
+      ],
+      "instructions": "Step 1\nIn a small pot, simmer heavy cream, milk, sugar and salt until sugar completely dissolves, about 5 minutes. Remove pot from heat. In a separate bowl, whisk yolks. Whisking constantly, slowly whisk about a third of the hot cream into the yolks, then whisk the yolk mixture back into the pot with the cream. Return pot to medium-low heat and gently cook until mixture is thick enough to coat the back of a spoon (about 170 degrees on an instant-read thermometer).\nStep 2\nStrain through a fine-mesh sieve into a bowl. Cool mixture to room temperature. Cover and chill at least 4 hours or overnight. Churn in an ice cream machine according to manufacturers’ instructions. Serve directly from the machine for soft serve, or store in freezer until needed.",
+      "category": "dessert",
+      "preparationTime": "45",
+      "cookingTime": "40",
+      "servings": "7",
+      "picture": "",
+      "userId": "f5ab",
+      "id": "6769"
     }
   ],
   "users": [
@@ -25,22 +43,10 @@
       "password": "mukona101"
     },
     {
-      "id": "a67d",
-      "name": "",
-      "email": "",
-      "password": ""
-    },
-    {
-      "id": "02a3",
-      "name": "",
-      "email": "",
-      "password": ""
-    },
-    {
-      "id": "a2e0",
-      "name": "",
-      "email": "",
-      "password": ""
+      "id": "3946",
+      "name": "mukona",
+      "email": "email.@gmai.com",
+      "password": "password"
     }
   ]
 }

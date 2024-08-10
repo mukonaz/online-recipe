@@ -295,4 +295,65 @@ footer a {
   text-decoration: none;
 }
 
+.home-page {
+  overflow-y: auto;
+  max-height: 100vh; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
+}
+
+.recipe-form {
+  width: 100%;
+  max-width: 600px; 
+}
+.recipe-list {
+  overflow-y: auto;
+  width: 100%;
+  max-width: 600px; 
+}
+
+.recipe-item {
+  margin-bottom: 20px; 
+}
+
+img {
+  max-width: 100%; 
+  height: auto;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background: #f4f4f4;
+  border-radius: 4px;
+}
+
+.form input,
+.form button {
+  margin: 10px 0;
+  padding: 10px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.form button {
+  background: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.form button:hover {
+  background: #0056b3;
+}
