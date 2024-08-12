@@ -33,6 +33,23 @@
       "picture": "",
       "userId": "f5ab",
       "id": "6769"
+    },
+    {
+      "name": "ice cream",
+      "ingredients": [
+        "2cups heavy cream",
+        "1cup whole milk",
+        "⅔cup granulated sugar",
+        "⅛teaspoon fine sea salt"
+      ],
+      "instructions": "cook it your self",
+      "category": "dessert",
+      "preparationTime": "45",
+      "cookingTime": "40",
+      "servings": "6",
+      "picture": "blob:http://localhost:3000/4024accf-e510-4794-a734-06a54c823fff",
+      "userId": "136e",
+      "id": "3a22"
     }
   ],
   "users": [
@@ -47,6 +64,11 @@
       "name": "mukona",
       "email": "email.@gmai.com",
       "password": "password"
+    },
+    {
+      "id": "2eba",
+      "email": "ravele@gmail.com",
+      "password": "ravele101"
     }
   ]
 }

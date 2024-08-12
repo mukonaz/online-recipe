@@ -15,20 +15,15 @@ function HomePage({ user, onLogout }) {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
-  const navigate = useNavigate(); // Hook to programmatically navigate
+  const [selectedFile, setSelectedFile] = useState(null); 
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user && user.id) {
-      // Fetch the user's recipes from the JSON server
       fetch(`http://localhost:3001/recipes?userId=${user.id}`)
         .then(response => response.json())
-        .then(data => {
-          console.log('Fetched recipes:', data); // Log the fetched data
-          setRecipes(data);
-        })
-        .catch(error => {
-          console.error("Failed to fetch recipes:", error); // Log any errors
-        });
+        .then(data => setRecipes(data))
+        .catch(error => console.error("Failed to fetch recipes:", error));
     }
   }, [user]);
 
@@ -40,12 +35,17 @@ function HomePage({ user, onLogout }) {
     });
   };
 
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]); 
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!user || !user.id) {
       alert("User is not logged in");
       return;
     }
+    
     const method = isEditing ? "PUT" : "POST";
     const url = isEditing
       ? `http://localhost:3001/recipes/${editId}`
@@ -54,7 +54,8 @@ function HomePage({ user, onLogout }) {
     const recipeData = {
       ...newRecipe,
       userId: user.id,
-      ingredients: newRecipe.ingredients.split(",").map(item => item.trim()), // Ensure ingredients is an array
+      ingredients: newRecipe.ingredients.split(",").map(item => item.trim()),
+      picture: selectedFile ? URL.createObjectURL(selectedFile) : newRecipe.picture
     };
 
     try {
@@ -85,7 +86,8 @@ function HomePage({ user, onLogout }) {
           servings: "",
           picture: ""
         });
-        window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to the top
+        setSelectedFile(null); 
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         console.error('Failed to add/update recipe');
       }
@@ -97,7 +99,7 @@ function HomePage({ user, onLogout }) {
   const handleEdit = (recipe) => {
     setNewRecipe({
       name: recipe.name,
-      ingredients: recipe.ingredients.join(", "), // Convert array to comma-separated string
+      ingredients: recipe.ingredients.join(", "),
       instructions: recipe.instructions,
       category: recipe.category,
       preparationTime: recipe.preparationTime,
@@ -118,8 +120,8 @@ function HomePage({ user, onLogout }) {
   };
 
   const handleLogout = () => {
-    onLogout(); // Call the onLogout function passed via props
-    navigate('/'); // Redirect to login page
+    onLogout();
+    navigate('/');
   };
 
   if (!user || !user.id) {
@@ -132,64 +134,14 @@ function HomePage({ user, onLogout }) {
       <h1>Welcome, {user.name}</h1>
       <form onSubmit={handleSubmit} className="recipe-form">
         <h2>{isEditing ? "Edit Recipe" : "Add New Recipe"}</h2>
-        <input
-          type="text"
-          name="name"
-          placeholder="Recipe Name"
-          value={newRecipe.name}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="ingredients"
-          placeholder="Ingredients (comma separated)"
-          value={newRecipe.ingredients}
-          onChange={handleChange}
-          required
-        />
-        <textarea
-          name="instructions"
-          placeholder="Instructions"
-          value={newRecipe.instructions}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="category"
-          placeholder="Category (e.g., Dessert)"
-          value={newRecipe.category}
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="preparationTime"
-          placeholder="Preparation Time"
-          value={newRecipe.preparationTime}
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="cookingTime"
-          placeholder="Cooking Time"
-          value={newRecipe.cookingTime}
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="servings"
-          placeholder="Servings"
-          value={newRecipe.servings}
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="picture"
-          placeholder="Picture URL"
-          value={newRecipe.picture}
-          onChange={handleChange}
-        />
+        <input type="text" name="name" placeholder="Recipe Name" value={newRecipe.name} onChange={handleChange} required/>
+        <input type="text" name="ingredients" placeholder="Ingredients (comma separated)" value={newRecipe.ingredients} onChange={handleChange} required/>
+        <textarea name="instructions" placeholder="Instructions" value={newRecipe.instructions} onChange={handleChange} required/>
+        <input type="text" name="category" placeholder="Category (e.g., Dessert)" value={newRecipe.category} onChange={handleChange}/>
+        <input type="text" name="preparationTime" placeholder="Preparation Time" value={newRecipe.preparationTime} onChange={handleChange}/>
+        <input type="text" name="cookingTime" placeholder="Cooking Time" value={newRecipe.cookingTime} onChange={handleChange}/>
+        <input type="text" name="servings" placeholder="Servings" value={newRecipe.servings} onChange={handleChange}/>
+        <input type="file" name="picture" accept="image/*" onChange={handleFileChange}/>
         <button type="submit">{isEditing ? "Update Recipe" : "Add Recipe"}</button>
       </form>
 

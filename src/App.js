@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import SignInForm from "./components/Login";
@@ -7,7 +7,7 @@ import Home from "./components/home";
 
 export default function App() {
   const [type, setType] = useState("signIn");
-  const [user, setUser] = useState(null); // State to manage user authentication
+  const [user, setUser] = useState(null); 
 
   const handleOnClick = (text) => {
     if (text !== type) {
@@ -16,12 +16,23 @@ export default function App() {
   };
 
   const handleLogin = (userData) => {
-    setUser(userData); // Set user data on successful login
+    console.log("Logging in user:", userData); 
+    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData)); 
   };
 
   const handleLogout = () => {
-    setUser(null); // Clear user data on logout
+    setUser(null);
+    localStorage.removeItem("user"); 
   };
+
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   const containerClass = "container " + (type === "signUp" ? "right-panel-active" : "");
 

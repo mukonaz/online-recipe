@@ -40,20 +40,8 @@ function SignUpForm({ onLogin }) {
     <div className="form-container">
       <form onSubmit={handleSubmit}>
         <h1>Sign Up</h1>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required/>
+        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
         <button type="submit">Sign Up</button>
         {error && <p className="error">{error}</p>}
       </form>
