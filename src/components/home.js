@@ -15,7 +15,7 @@ function HomePage({ user, onLogout }) {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
-  const [selectedFile, setSelectedFile] = useState(null); 
+  const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,7 +36,7 @@ function HomePage({ user, onLogout }) {
   };
 
   const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]); 
+    setSelectedFile(e.target.files[0]);
   };
 
   const handleSubmit = async (event) => {
@@ -45,7 +45,30 @@ function HomePage({ user, onLogout }) {
       alert("User is not logged in");
       return;
     }
-    
+
+    let imageUrl = newRecipe.picture;
+
+    if (selectedFile) {
+      const formData = new FormData();
+      formData.append('picture', selectedFile);
+
+      try {
+        const response = await fetch('http://localhost:3001/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          imageUrl = data.url;
+        } else {
+          console.error('Failed to upload image');
+        }
+      } catch (error) {
+        console.error('Error uploading image:', error);
+      }
+    }
+
     const method = isEditing ? "PUT" : "POST";
     const url = isEditing
       ? `http://localhost:3001/recipes/${editId}`
@@ -55,7 +78,7 @@ function HomePage({ user, onLogout }) {
       ...newRecipe,
       userId: user.id,
       ingredients: newRecipe.ingredients.split(",").map(item => item.trim()),
-      picture: selectedFile ? URL.createObjectURL(selectedFile) : newRecipe.picture
+      picture: imageUrl // Use the uploaded image URL
     };
 
     try {
@@ -86,7 +109,7 @@ function HomePage({ user, onLogout }) {
           servings: "",
           picture: ""
         });
-        setSelectedFile(null); 
+        setSelectedFile(null);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         console.error('Failed to add/update recipe');
@@ -134,14 +157,63 @@ function HomePage({ user, onLogout }) {
       <h1>Welcome, {user.name}</h1>
       <form onSubmit={handleSubmit} className="recipe-form">
         <h2>{isEditing ? "Edit Recipe" : "Add New Recipe"}</h2>
-        <input type="text" name="name" placeholder="Recipe Name" value={newRecipe.name} onChange={handleChange} required/>
-        <input type="text" name="ingredients" placeholder="Ingredients (comma separated)" value={newRecipe.ingredients} onChange={handleChange} required/>
-        <textarea name="instructions" placeholder="Instructions" value={newRecipe.instructions} onChange={handleChange} required/>
-        <input type="text" name="category" placeholder="Category (e.g., Dessert)" value={newRecipe.category} onChange={handleChange}/>
-        <input type="text" name="preparationTime" placeholder="Preparation Time" value={newRecipe.preparationTime} onChange={handleChange}/>
-        <input type="text" name="cookingTime" placeholder="Cooking Time" value={newRecipe.cookingTime} onChange={handleChange}/>
-        <input type="text" name="servings" placeholder="Servings" value={newRecipe.servings} onChange={handleChange}/>
-        <input type="file" name="picture" accept="image/*" onChange={handleFileChange}/>
+        <input
+          type="text"
+          name="name"
+          placeholder="Recipe Name"
+          value={newRecipe.name}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="text"
+          name="ingredients"
+          placeholder="Ingredients (comma separated)"
+          value={newRecipe.ingredients}
+          onChange={handleChange}
+          required
+        />
+        <textarea
+          name="instructions"
+          placeholder="Instructions"
+          value={newRecipe.instructions}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="text"
+          name="category"
+          placeholder="Category (e.g., Dessert)"
+          value={newRecipe.category}
+          onChange={handleChange}
+        />
+        <input
+          type="text"
+          name="preparationTime"
+          placeholder="Preparation Time"
+          value={newRecipe.preparationTime}
+          onChange={handleChange}
+        />
+        <input
+          type="text"
+          name="cookingTime"
+          placeholder="Cooking Time"
+          value={newRecipe.cookingTime}
+          onChange={handleChange}
+        />
+        <input
+          type="text"
+          name="servings"
+          placeholder="Servings"
+          value={newRecipe.servings}
+          onChange={handleChange}
+        />
+        <input
+          type="file"
+          name="picture"
+          accept="image/*"
+          onChange={handleFileChange}
+        />
         <button type="submit">{isEditing ? "Update Recipe" : "Add Recipe"}</button>
       </form>
 
