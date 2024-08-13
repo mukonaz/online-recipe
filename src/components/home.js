@@ -15,15 +15,21 @@ function HomePage({ user, onLogout }) {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState(""); // New state for search query
+  const [searchResults, setSearchResults] = useState([]); // New state for search results
+  const navigate = useNavigate(); // Hook to programmatically navigate
 
   useEffect(() => {
     if (user && user.id) {
+      // Fetch the user's recipes from the JSON server
       fetch(`http://localhost:3001/recipes?userId=${user.id}`)
         .then(response => response.json())
-        .then(data => setRecipes(data))
-        .catch(error => console.error("Failed to fetch recipes:", error));
+        .then(data => {
+          setRecipes(data);
+        })
+        .catch(error => {
+          console.error("Failed to fetch recipes:", error); // Log any errors
+        });
     }
   }, [user]);
 
@@ -35,40 +41,12 @@ function HomePage({ user, onLogout }) {
     });
   };
 
-  const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!user || !user.id) {
       alert("User is not logged in");
       return;
     }
-
-    let imageUrl = newRecipe.picture;
-
-    if (selectedFile) {
-      const formData = new FormData();
-      formData.append('picture', selectedFile);
-
-      try {
-        const response = await fetch('http://localhost:3001/upload', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          imageUrl = data.url;
-        } else {
-          console.error('Failed to upload image');
-        }
-      } catch (error) {
-        console.error('Error uploading image:', error);
-      }
-    }
-
     const method = isEditing ? "PUT" : "POST";
     const url = isEditing
       ? `http://localhost:3001/recipes/${editId}`
@@ -77,8 +55,7 @@ function HomePage({ user, onLogout }) {
     const recipeData = {
       ...newRecipe,
       userId: user.id,
-      ingredients: newRecipe.ingredients.split(",").map(item => item.trim()),
-      picture: imageUrl // Use the uploaded image URL
+      ingredients: newRecipe.ingredients.split(",").map(item => item.trim()), // Ensure ingredients is an array
     };
 
     try {
@@ -109,8 +86,7 @@ function HomePage({ user, onLogout }) {
           servings: "",
           picture: ""
         });
-        setSelectedFile(null);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to the top
       } else {
         console.error('Failed to add/update recipe');
       }
@@ -122,7 +98,7 @@ function HomePage({ user, onLogout }) {
   const handleEdit = (recipe) => {
     setNewRecipe({
       name: recipe.name,
-      ingredients: recipe.ingredients.join(", "),
+      ingredients: recipe.ingredients.join(", "), // Convert array to comma-separated string
       instructions: recipe.instructions,
       category: recipe.category,
       preparationTime: recipe.preparationTime,
@@ -143,8 +119,20 @@ function HomePage({ user, onLogout }) {
   };
 
   const handleLogout = () => {
-    onLogout();
-    navigate('/');
+    onLogout(); // Call the onLogout function passed via props
+    navigate('/'); // Redirect to login page
+  };
+
+  const handleSearch = async (event) => {
+    event.preventDefault();
+
+    try {
+      const response = await fetch(`http://localhost:3001/recipes?name_like=${searchQuery}`);
+      const data = await response.json();
+      setSearchResults(data);
+    } catch (error) {
+      console.error("Error during search:", error);
+    }
   };
 
   if (!user || !user.id) {
@@ -155,8 +143,19 @@ function HomePage({ user, onLogout }) {
     <div className="home-page">
       <button onClick={handleLogout}>Logout</button>
       <h1>Welcome, {user.name}</h1>
+
+      <form onSubmit={handleSearch} className="search-form">
+        <input
+          type="text"
+          placeholder="Search for recipes..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <button type="submit">Search</button>
+      </form>
+
+      <h2>{isEditing ? "Edit Recipe" : "Add New Recipe"}</h2>
       <form onSubmit={handleSubmit} className="recipe-form">
-        <h2>{isEditing ? "Edit Recipe" : "Add New Recipe"}</h2>
         <input
           type="text"
           name="name"
@@ -211,8 +210,13 @@ function HomePage({ user, onLogout }) {
         <input
           type="file"
           name="picture"
-          accept="image/*"
-          onChange={handleFileChange}
+          placeholder="Picture URL"
+          onChange={(e) => {
+            setNewRecipe({
+              ...newRecipe,
+              picture: URL.createObjectURL(e.target.files[0]),
+            });
+          }}
         />
         <button type="submit">{isEditing ? "Update Recipe" : "Add Recipe"}</button>
       </form>
@@ -231,6 +235,22 @@ function HomePage({ user, onLogout }) {
             <p><strong>Instructions:</strong> {recipe.instructions}</p>
             <button onClick={() => handleEdit(recipe)}>Edit</button>
             <button onClick={() => handleDelete(recipe.id)}>Delete</button>
+          </div>
+        ))}
+      </div>
+
+      <h2>Search Results</h2>
+      <div className="recipe-list">
+        {searchResults.map((recipe) => (
+          <div key={recipe.id} className="recipe-item">
+            <h3>{recipe.name}</h3>
+            <img src={recipe.picture} alt={recipe.name} />
+            <p><strong>Category:</strong> {recipe.category}</p>
+            <p><strong>Preparation Time:</strong> {recipe.preparationTime}</p>
+            <p><strong>Cooking Time:</strong> {recipe.cookingTime}</p>
+            <p><strong>Servings:</strong> {recipe.servings}</p>
+            <p><strong>Ingredients:</strong> {recipe.ingredients.join(", ")}</p>
+            <p><strong>Instructions:</strong> {recipe.instructions}</p>
           </div>
         ))}
       </div>
