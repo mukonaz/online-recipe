@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 function SignUpForm({ onLogin }) {
   const [email, setEmail] = useState("");
@@ -37,16 +38,33 @@ function SignUpForm({ onLogin }) {
   };
 
   return (
+
+<div className="form-box">
+<form onSubmit={handleSubmit} className="form">
+    <span className="title">Sign up</span>
+    <span className="subtitle">Create a free account with your email.</span>
     <div className="form-container">
-      <form onSubmit={handleSubmit}>
-        <h1>Sign Up</h1>
-        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required/>
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
-        <button type="submit">Sign Up</button>
-        {error && <p className="error">{error}</p>}
-      </form>
+      <input type="text" class="input" placeholder="Full Name"/>
+			<input type="email" class="input" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required/>
+			<input type="password" class="input" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
     </div>
+    <button type="submit">Sign up</button>
+</form>
+<div className="form-section">
+  <p>Have an account? <Link to="/signin" ><a>Sign in</a></Link> </p>
+</div>
+</div>
+    
   );
 }
 
 export default SignUpForm;
+{/* // <div className="form-container">
+    //   <form onSubmit={handleSubmit}>
+    //     <h1>Sign Up</h1>
+    //     <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required/>
+    //     <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
+    //     <button type="submit">Sign Up</button>
+    //     {error && <p className="error">{error}</p>}
+    //   </form>
+    // </div> */}

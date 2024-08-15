@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
 
 function SignInForm({ onLogin }) {
   const [email, setEmail] = useState("");
@@ -17,9 +18,9 @@ function SignInForm({ onLogin }) {
      
       const user = users.find(user => user.password === password);
       
-      if (user) {
+      if (users) {
         onLogin(user); 
-        navigate("/home"); 
+        navigate("/Home"); 
       } else {
         setError("Invalid email or password");
       }
@@ -30,16 +31,25 @@ function SignInForm({ onLogin }) {
   };
 
   return (
+
+<div className="form-box">
+<form onSubmit={handleSubmit} className="form">
+    <span className="title">Sign in</span>
+    <span className="subtitle">Welcome Back</span>
     <div className="form-container">
-      <form onSubmit={handleSubmit}>
-        <h1>Sign In</h1>
-        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required/>
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
-        <button type="submit">Sign In</button>
-        {error && <p className="error">{error}</p>}
-      </form>
+			<input type="email" className="input" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required/>
+			<input type="password" className="input" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
     </div>
+    <button type="submit">Sign up</button>
+    {error && <p className="error">{error}</p>}
+</form>
+<div class="form-section">
+  <p>Don't have an account? <Link to="/signup" >Sign Up</Link>  </p>
+</div>
+</div>
+   
   );
 }
 
 export default SignInForm;
+ 

@@ -1,19 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom"; // Import Navigate
 import "./App.css";
 import SignInForm from "./components/Login";
 import SignUpForm from "./components/Registration";
 import Home from "./components/home";
 
-export default function App() {
-  const [type, setType] = useState("signIn");
-  const [user, setUser] = useState(null); 
-
-  const handleOnClick = (text) => {
-    if (text !== type) {
-      setType(text);
-    }
-  };
+const App = () => {
+  const [user, setUser] = useState(null);
 
   const handleLogin = (userData) => {
     console.log("Logging in user:", userData); 
@@ -26,7 +19,6 @@ export default function App() {
     localStorage.removeItem("user"); 
   };
 
-
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -34,60 +26,17 @@ export default function App() {
     }
   }, []);
 
-  const containerClass = "container " + (type === "signUp" ? "right-panel-active" : "");
-
   return (
-    <Router>
-      <div className="App">
-        <h2>Online Recipe Form</h2>
-
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <div className={containerClass} id="container">
-                {type === "signUp" ? (
-                  <SignUpForm onLogin={handleLogin} />
-                ) : (
-                  <SignInForm onLogin={handleLogin} />
-                )}
-                <div className="overlay-container">
-                  <div className="overlay">
-                    <div className="overlay-panel overlay-left">
-                      <h1>Welcome Back!</h1>
-                      <p>To keep connected with us, please login with your personal info</p>
-                      <button
-                        className="ghost"
-                        id="signIn"
-                        onClick={() => handleOnClick("signIn")}
-                      >
-                        Sign In
-                      </button>
-                    </div>
-                    <div className="overlay-panel overlay-right">
-                      <h1>Hello, Friend!</h1>
-                      <p>Enter your personal details and start your journey with us</p>
-                      <button
-                        className="ghost"
-                        id="signUp"
-                        onClick={() => handleOnClick("signUp")}
-                      >
-                        Sign Up
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            }
-          />
-          <Route
-            path="/home"
-            element={user ? <Home user={user} onLogout={handleLogout} /> : <Navigate to="/" />}
-          />
-          {/* Redirect to home if the user tries to access an unknown route */}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </div>
-    </Router>
+    <Routes>
+      <Route path="/" element={<SignInForm onLogin={handleLogin} />} />
+      <Route path="/signin" element={<SignInForm onLogin={handleLogin} />} />
+      <Route path="/signup" element={<SignUpForm onLogin={handleLogin} />} />
+      <Route
+        path="/home"
+        element={user ? <Home user={user} onLogout={handleLogout} /> : <Navigate to="/" />}
+      />
+    </Routes>
   );
 }
+
+export default App;

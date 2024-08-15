@@ -16,27 +16,28 @@ const storage = multer.diskStorage({
     cb(null, uploadPath);
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // Append the file extension
+    cb(null, Date.now() + path.extname(file.originalname)); 
   }
 });
 
 const upload = multer({ storage: storage });
 
-// Serve static files from the 'uploads' directory
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Endpoint to handle image upload
+
 app.post('/upload', upload.single('picture'), (req, res) => {
   if (!req.file) {
     return res.status(400).send('No file uploaded');
   }
 
-  // Return the uploaded file's URL
+ 
   const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
   res.status(200).json({ url: fileUrl });
 });
 
 // Start the server
+// json-server --watch db.json --port 3001
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
