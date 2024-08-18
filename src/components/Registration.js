@@ -27,7 +27,7 @@ function SignUpForm({ onLogin }) {
 
       if (createUserResponse.ok) {
         const user = await createUserResponse.json();
-        onLogin(user); // Pass user data to App component
+        onLogin(user); 
       } else {
         setError("Failed to create user. Please try again.");
       }

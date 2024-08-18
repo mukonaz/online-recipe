@@ -6,7 +6,7 @@ const fs = require('fs');
 const app = express();
 const PORT = 3001;
 
-// Configure multer for file storage
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const uploadPath = path.join(__dirname, 'uploads');
@@ -36,7 +36,7 @@ app.post('/upload', upload.single('picture'), (req, res) => {
   res.status(200).json({ url: fileUrl });
 });
 
-// Start the server
+
 // json-server --watch db.json --port 3001
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
