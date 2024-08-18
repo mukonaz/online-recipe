@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import NavigationBar from './NavigationBar';
+import RecipeCard from './RecipeCard';
+import RecipeModal from './Recipe';
 
 function HomePage({ user, onLogout }) {
   const [recipes, setRecipes] = useState([]);
@@ -15,21 +18,17 @@ function HomePage({ user, onLogout }) {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
-  const [searchQuery, setSearchQuery] = useState(""); // New state for search query
-  const [searchResults, setSearchResults] = useState([]); // New state for search results
-  const navigate = useNavigate(); // Hook to programmatically navigate
+  const [searchQuery, setSearchQuery] = useState(""); 
+  const [searchResults, setSearchResults] = useState([]); 
+  const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     if (user && user.id) {
-      // Fetch the user's recipes from the JSON server
       fetch(`http://localhost:3001/recipes?userId=${user.id}`)
         .then(response => response.json())
-        .then(data => {
-          setRecipes(data);
-        })
-        .catch(error => {
-          console.error("Failed to fetch recipes:", error); // Log any errors
-        });
+        .then(data => setRecipes(data))
+        .catch(error => console.error("Failed to fetch recipes:", error));
     }
   }, [user]);
 
@@ -55,7 +54,7 @@ function HomePage({ user, onLogout }) {
     const recipeData = {
       ...newRecipe,
       userId: user.id,
-      ingredients: newRecipe.ingredients.split(",").map(item => item.trim()), // Ensure ingredients is an array
+      ingredients: newRecipe.ingredients.split(",").map(item => item.trim()), 
     };
 
     try {
@@ -86,7 +85,7 @@ function HomePage({ user, onLogout }) {
           servings: "",
           picture: ""
         });
-        window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to the top
+        setShowModal(false);
       } else {
         console.error('Failed to add/update recipe');
       }
@@ -98,7 +97,7 @@ function HomePage({ user, onLogout }) {
   const handleEdit = (recipe) => {
     setNewRecipe({
       name: recipe.name,
-      ingredients: recipe.ingredients.join(", "), // Convert array to comma-separated string
+      ingredients: recipe.ingredients.join(", "),
       instructions: recipe.instructions,
       category: recipe.category,
       preparationTime: recipe.preparationTime,
@@ -108,6 +107,7 @@ function HomePage({ user, onLogout }) {
     });
     setIsEditing(true);
     setEditId(recipe.id);
+    setShowModal(true);
   };
 
   const handleDelete = (id) => {
@@ -119,8 +119,8 @@ function HomePage({ user, onLogout }) {
   };
 
   const handleLogout = () => {
-    onLogout(); // Call the onLogout function passed via props
-    navigate('/'); // Redirect to login page
+    onLogout(); 
+    navigate('/');
   };
 
   const handleSearch = async (event) => {
@@ -140,118 +140,22 @@ function HomePage({ user, onLogout }) {
   }
 
   return (
-    <div className="home-page">
-      <button onClick={handleLogout}>Logout</button>
-      <h1>Welcome, {user.name}</h1>
-
-      <form onSubmit={handleSearch} className="search-form">
-        <input
-          type="text"
-          placeholder="Search for recipes..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <button type="submit">Search</button>
-      </form>
-
-      <h2>{isEditing ? "Edit Recipe" : "Add New Recipe"}</h2>
-      <form onSubmit={handleSubmit} className="recipe-form">
-        <input
-          type="text"
-          name="name"
-          placeholder="Recipe Name"
-          value={newRecipe.name}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="ingredients"
-          placeholder="Ingredients (comma separated)"
-          value={newRecipe.ingredients}
-          onChange={handleChange}
-          required
-        />
-        <textarea
-          name="instructions"
-          placeholder="Instructions"
-          value={newRecipe.instructions}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="category"
-          placeholder="Category (e.g., Dessert)"
-          value={newRecipe.category}
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="preparationTime"
-          placeholder="Preparation Time"
-          value={newRecipe.preparationTime}
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="cookingTime"
-          placeholder="Cooking Time"
-          value={newRecipe.cookingTime}
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="servings"
-          placeholder="Servings"
-          value={newRecipe.servings}
-          onChange={handleChange}
-        />
-        <input
-          type="file"
-          name="picture"
-          placeholder="Picture URL"
-          onChange={(e) => {
-            setNewRecipe({
-              ...newRecipe,
-              picture: URL.createObjectURL(e.target.files[0]),
-            });
-          }}
-        />
-        <button type="submit">{isEditing ? "Update Recipe" : "Add Recipe"}</button>
-      </form>
+<div className="home-page">
+      <NavigationBar user={user} onLogout={handleLogout} searchQuery={searchQuery} setSearchQuery={setSearchQuery} handleSearch={handleSearch}/>
+      <button onClick={() => setShowModal(true)}>Add New Recipe</button>
+      <RecipeModal show={showModal} handleClose={() => setShowModal(false)} handleSubmit={handleSubmit} newRecipe={newRecipe} handleChange={handleChange} isEditing={isEditing}/>
 
       <h2>Your Recipes</h2>
       <div className="recipe-list">
         {recipes.map((recipe) => (
-          <div key={recipe.id} className="recipe-item">
-            <h3>{recipe.name}</h3>
-            <img src={recipe.picture} alt={recipe.name} />
-            <p><strong>Category:</strong> {recipe.category}</p>
-            <p><strong>Preparation Time:</strong> {recipe.preparationTime}</p>
-            <p><strong>Cooking Time:</strong> {recipe.cookingTime}</p>
-            <p><strong>Servings:</strong> {recipe.servings}</p>
-            <p><strong>Ingredients:</strong> {recipe.ingredients.join(", ")}</p>
-            <p><strong>Instructions:</strong> {recipe.instructions}</p>
-            <button onClick={() => handleEdit(recipe)}>Edit</button>
-            <button onClick={() => handleDelete(recipe.id)}>Delete</button>
-          </div>
+          <RecipeCard key={recipe.id} recipe={recipe} handleEdit={handleEdit} handleDelete={handleDelete}/>
         ))}
       </div>
 
       <h2>Search Results</h2>
       <div className="recipe-list">
         {searchResults.map((recipe) => (
-          <div key={recipe.id} className="recipe-item">
-            <h3>{recipe.name}</h3>
-            <img src={recipe.picture} alt={recipe.name} />
-            <p><strong>Category:</strong> {recipe.category}</p>
-            <p><strong>Preparation Time:</strong> {recipe.preparationTime}</p>
-            <p><strong>Cooking Time:</strong> {recipe.cookingTime}</p>
-            <p><strong>Servings:</strong> {recipe.servings}</p>
-            <p><strong>Ingredients:</strong> {recipe.ingredients.join(", ")}</p>
-            <p><strong>Instructions:</strong> {recipe.instructions}</p>
-          </div>
+          <RecipeCard key={recipe.id} recipe={recipe} handleEdit={handleEdit} handleDelete={handleDelete}/>
         ))}
       </div>
     </div>
