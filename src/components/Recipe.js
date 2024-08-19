@@ -15,7 +15,8 @@ function RecipeModal({ show, handleClose, handleSubmit, newRecipe, handleChange,
           <input type="text" name="preparationTime" placeholder="Preparation Time" value={newRecipe.preparationTime} onChange={handleChange}/>
           <input type="text" name="cookingTime" placeholder="Cooking Time" value={newRecipe.cookingTime} onChange={handleChange}/>
           <input type="text" name="servings" placeholder="Servings" value={newRecipe.servings} onChange={handleChange}/>
-          <input type="file" name="picture" placeholder="Picture URL" onChange={(e) => { handleChange({ target: { name: 'picture', value: URL.createObjectURL(e.target.files[0]) } }); }}/>
+          <input type="file" name="picture" placeholder="Picture URL" accept='picture/*' onChange={handleChange}/>
+          {FormData.picture && <img src={FormData.picture} alt="recipe picture" />} 
           <button type="submit">{isEditing ? "Update Recipe" : "Add Recipe"}</button>
           <button type="button" onClick={handleClose}>Cancel</button>
         </form>

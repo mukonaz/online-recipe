@@ -7,14 +7,15 @@ function RecipeCard({ recipe, handleEdit, handleDelete }) {
     <div className="recipe-card">
       <h3>{recipe.name}</h3>
       <img src={recipe.picture} alt={recipe.name} />
+
+      {showDetails && (
+        <>
       <p><strong>Category:</strong> {recipe.category}</p>
       <p><strong>Preparation Time:</strong> {recipe.preparationTime}</p>
       <p><strong>Cooking Time:</strong> {recipe.cookingTime}</p>
       <p><strong>Servings:</strong> {recipe.servings}</p>
-      {showDetails && (
-        <>
-          <p><strong>Ingredients:</strong> {recipe.ingredients.join(", ")}</p>
-          <p><strong>Instructions:</strong> {recipe.instructions}</p>
+      <p><strong>Ingredients:</strong> {recipe.ingredients.join(", ")}</p>
+      <p><strong>Instructions:</strong> {recipe.instructions}</p>
         </>
       )}
       <button onClick={() => setShowDetails(!showDetails)}>

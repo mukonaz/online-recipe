@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 function SignUpForm({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullname, setFullname] = useState("")
   const [error, setError] = useState("");
 
   const handleSubmit = async (event) => {
@@ -18,7 +19,7 @@ function SignUpForm({ onLogin }) {
         return;
       }
 
-      const newUser = { email, password };
+      const newUser = { fullname,email, password };
       const createUserResponse = await fetch("http://localhost:3001/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -44,7 +45,7 @@ function SignUpForm({ onLogin }) {
     <span className="title">Sign up</span>
     <span className="subtitle">Create a free account with your email.</span>
     <div className="form-container">
-      <input type="text" class="input" placeholder="Full Name"/>
+      <input type="text" class="input" placeholder="Full Name" value={fullname} onChange={(e) => setFullname(e.target.value)} required/>
 			<input type="email" class="input" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required/>
 			<input type="password" class="input" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required/>
     </div>
