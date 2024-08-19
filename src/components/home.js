@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavigationBar from './NavigationBar';
 import RecipeCard from './RecipeCard';
-import RecipeModal from './RecipeModal';
+import RecipeModal from './Recipe';
 
 function HomePage({ user, onLogout }) {
   const [recipes, setRecipes] = useState([]);
