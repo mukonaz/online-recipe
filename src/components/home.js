@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavigationBar from './NavigationBar';
 import RecipeCard from './RecipeCard';
-import RecipeModal from './Recipe';
-import { Prev } from 'react-bootstrap/esm/PageItem';
+import RecipeModal from './RecipeModal';
 
 function HomePage({ user, onLogout }) {
   const [recipes, setRecipes] = useState([]);
@@ -15,7 +14,7 @@ function HomePage({ user, onLogout }) {
     preparationTime: "",
     cookingTime: "",
     servings: "",
-    picture: ""
+    picture: "" 
   });
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
@@ -40,18 +39,6 @@ function HomePage({ user, onLogout }) {
       [name]: value
     });
   };
-
-const handleImageChange = (e) => {
-  const file = e.target.files[0];
-  const reader = new FileReader();
-  reader.onloadend = () => {
-    setFormData(prev => ({ ...prev,
-      picture: reader.result }));
-  };
-  if (file) {
-    reader.readAsDataURL(file);
-  }
-};
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -153,11 +140,9 @@ const handleImageChange = (e) => {
   }
 
   return (
-<div className="home-page">
+    <div className="home-page">
       <NavigationBar user={user} onLogout={handleLogout} searchQuery={searchQuery} setSearchQuery={setSearchQuery} handleSearch={handleSearch}/>
-      <button onClick={() => setShowModal(true)}>Add New Recipe</button>
-      <RecipeModal show={showModal} handleClose={() => setShowModal(false)} handleSubmit={handleSubmit} newRecipe={newRecipe} handleChange={handleChange} handleImageChange={handleImageChange} isEditing={isEditing}/>
-
+      <RecipeModal show={showModal} handleClose={() => setShowModal(false)} handleSubmit={handleSubmit} newRecipe={newRecipe} handleChange={handleChange} isEditing={isEditing}/>
       <h2>Your Recipes</h2>
       <div className="recipe-list">
         {recipes.map((recipe) => (

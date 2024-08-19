@@ -3,6 +3,22 @@ import React from 'react';
 function RecipeModal({ show, handleClose, handleSubmit, newRecipe, handleChange, isEditing }) {
   if (!show) return null;
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        handleChange({
+          target: {
+            name: 'picture',
+            value: reader.result
+          }
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className="modal-overlay">
       <div className="modal-content">
@@ -15,8 +31,7 @@ function RecipeModal({ show, handleClose, handleSubmit, newRecipe, handleChange,
           <input type="text" name="preparationTime" placeholder="Preparation Time" value={newRecipe.preparationTime} onChange={handleChange}/>
           <input type="text" name="cookingTime" placeholder="Cooking Time" value={newRecipe.cookingTime} onChange={handleChange}/>
           <input type="text" name="servings" placeholder="Servings" value={newRecipe.servings} onChange={handleChange}/>
-          <input type="file" name="picture" placeholder="Picture URL" accept='picture/*' onChange={handleChange}/>
-          {FormData.picture && <img src={FormData.picture} alt="recipe picture" />} 
+          <input type="file" name="picture" placeholder="Picture" onChange={handleFileChange}/>
           <button type="submit">{isEditing ? "Update Recipe" : "Add Recipe"}</button>
           <button type="button" onClick={handleClose}>Cancel</button>
         </form>
